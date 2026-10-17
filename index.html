@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B6B4D">
+<title>মেস হিসাব</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light dark;
+  --green:#0B6B4D; --red:#D42B2E; --sun:#FFB400; --teal:#0B8A85; --pink:#D92E78; --violet:#3E2BB0;
+  --bg:#F1F5FA; --card:#FFFFFF; --ink:#18212F; --muted:#64708A; --line:#E1E8F1;
+  --tabon:#DDF3E8; --ok:#0A7F55; --bad:#C92427; --hero:#3E2BB0;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0E1520; --card:#17212E; --ink:#EAF0F7; --muted:#9AA8BC; --line:#263446;
+    --tabon:#12372B; --ok:#3DD9A0; --bad:#FF7B7E; --hero:#33249A;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Hind Siliguri','Noto Sans Bengali','Kalpurush',system-ui,sans-serif;font-size:16px;line-height:1.45}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+button:disabled{cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;width:100%}
+label{display:block;font-size:14px;color:var(--muted);margin:12px 0 4px}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:96px}
+
+.head{background:var(--green);color:#fff;padding:14px 16px 12px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mname{font-size:22px;font-weight:700;line-height:1.2}
+.msub{font-size:13.5px;opacity:.9}
+.ico{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.16);font-size:20px;flex:none}
+.monthbar{display:flex;align-items:center;justify-content:space-between;margin-top:12px;background:rgba(255,255,255,.14);border-radius:16px;padding:4px}
+.monthbar b{font-size:17px}
+.arr{width:44px;height:40px;border-radius:12px;font-size:24px;color:#fff;line-height:1}
+.arr:disabled{opacity:.3}
+.bead{height:20px;background-color:var(--green);
+  background-image:radial-gradient(circle at 10px 10px,var(--red) 4.5px,transparent 5px),radial-gradient(circle at 30px 10px,var(--sun) 4.5px,transparent 5px),radial-gradient(circle at 50px 10px,#19C3BB 4.5px,transparent 5px),radial-gradient(circle at 70px 10px,#FF6FA8 4.5px,transparent 5px);
+  background-size:80px 20px;background-repeat:repeat-x;border-radius:0 0 22px 22px}
+.oldm{margin:12px 14px 0;background:#FFF1C7;color:#4A3600;border-radius:14px;padding:10px 12px;font-size:14.5px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.oldm button{background:#4A3600;color:#FFF1C7;border-radius:999px;padding:6px 12px;font-size:13.5px;white-space:nowrap}
+.errb{margin:12px 14px 0;background:#FFDADB;color:#7A1215;border-radius:14px;padding:10px 12px;font-size:14.5px}
+
+.hero{margin:16px 14px 0;border-radius:26px;background:var(--hero);color:#fff;padding:20px 18px 16px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;right:-50px;top:-50px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero::after{content:"";position:absolute;right:30px;top:60px;width:70px;height:70px;border-radius:50%;background:rgba(255,180,0,.22)}
+.hl{font-size:15px;opacity:.9;position:relative;z-index:1}
+.rate{font-size:48px;font-weight:700;color:var(--sun);line-height:1.15;position:relative;z-index:1}
+.hs{font-size:14px;opacity:.9;position:relative;z-index:1}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;position:relative;z-index:1}
+.chip{border-radius:16px;padding:10px 6px;text-align:center;color:#fff}
+.chip b{display:block;font-size:17px;line-height:1.3}
+.chip span{font-size:12.5px}
+.c1{background:var(--red)} .c2{background:var(--teal)} .c3{background:var(--pink)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin:14px 14px 0}
+.mine{border:2px solid var(--sun)}
+.sec{display:flex;justify-content:space-between;align-items:center;margin:22px 16px 0;font-weight:700;font-size:18px;gap:8px}
+.sec small{font-weight:500;color:var(--muted);font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.muted{color:var(--muted)}
+.bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin:10px 0 8px}
+.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sun),#FF7A00)}
+
+.mem{display:flex;align-items:center;gap:12px;width:calc(100% - 28px);margin:10px 14px 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 14px;text-align:left}
+.av{width:44px;height:44px;border-radius:16px;color:#fff;font-weight:700;font-size:20px;display:grid;place-items:center;flex:none}
+.av.sm{width:36px;height:36px;border-radius:13px;font-size:17px}
+.mi{flex:1;min-width:0}
+.mn{font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mm{font-size:13.5px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.d{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px}
+.d.m{background:var(--sun)} .d.n{background:var(--teal)} .d.t{background:var(--violet)}
+@media (prefers-color-scheme:dark){.d.t{background:#8F7BFF}}
+.mb{text-align:right}
+.amt{font-weight:700;font-size:17px}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+.lb{font-size:13px;color:var(--muted)}
+
+.days{display:flex;gap:8px;overflow-x:auto;padding:14px 14px 4px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;width:52px;padding:8px 0 10px;border-radius:16px;background:var(--card);border:1px solid var(--line);text-align:center;position:relative}
+.day small{display:block;font-size:12px;color:var(--muted)}
+.day b{font-size:18px}
+.day i{position:absolute;bottom:4px;left:50%;margin-left:-3px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.day.sel{background:var(--green);border-color:var(--green);color:#fff}
+.day.sel small{color:#fff;opacity:.85}
+.day.sel i{background:var(--sun)}
+.tot3{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 14px 0}
+.tt{border-radius:16px;padding:10px 4px;text-align:center;font-size:12.5px;color:#fff}
+.tt b{display:block;font-size:20px;line-height:1.2}
+.tt.a{background:#E59A00;color:#2E2100} .tt.b{background:var(--teal)} .tt.c{background:var(--violet)} .tt.g{background:var(--pink)}
+.bulk{display:flex;gap:8px;margin:12px 14px 0;align-items:center;font-size:14px;color:var(--muted)}
+.bulk button{flex:1;padding:9px 0;border-radius:12px;border:1.5px dashed var(--line);font-weight:600;color:var(--ink)}
+.mrow{margin:10px 14px 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px}
+.mrow.me{border:2px solid var(--sun)}
+.mrow .nm{flex:1;font-weight:600;font-size:17px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gst{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.gst button{width:32px;height:32px;border-radius:10px;background:var(--bg);font-size:18px;font-weight:700}
+.gst button:disabled{opacity:.35}
+.gst span{min-width:16px;text-align:center;font-weight:700;color:var(--ink);font-size:16px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.slot{height:46px;border-radius:14px;background:var(--bg);border:1.5px solid var(--line);color:var(--muted);font-weight:600;transition:background .12s}
+.slot:disabled{opacity:.55}
+.slot.m.on{background:var(--sun);border-color:var(--sun);color:#2E2100}
+.slot.n.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.slot.t.on{background:var(--violet);border-color:var(--violet);color:#fff}
+
+.item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.dt{width:46px;height:46px;border-radius:14px;background:var(--bg);display:grid;place-items:center;text-align:center;line-height:1.1;flex:none}
+.dt b{font-size:17px} .dt small{font-size:11.5px;color:var(--muted)}
+.grow{flex:1;min-width:0}
+.x{width:34px;height:34px;border-radius:10px;background:var(--bg);color:var(--bad);font-size:15px;flex:none}
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:600}
+.tag.ok{background:#D6F3E5;color:#07603F} .tag.bad{background:#FFDADB;color:#9C1C1F} .tag.sun{background:#FFE9A8;color:#4A3600}
+@media (prefers-color-scheme:dark){.tag.ok{background:#12372B;color:#3DD9A0}.tag.bad{background:#4A2025;color:#FF9A9D}.tag.sun{background:#4A3A10;color:#FFD96B}}
+.logi{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.logi:last-child{border-bottom:0}
+.logi small{display:block;color:var(--muted);font-size:12.5px}
+
+.btn{display:block;width:100%;background:var(--green);color:#fff;border-radius:16px;padding:14px 16px;font-weight:600;text-align:center}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn.danger{background:var(--red)}
+.btn.sun{background:var(--sun);color:#2E2100}
+.btn.white{background:#fff;color:#18212F}
+.pill{background:var(--sun);color:#2E2100;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14.5px;white-space:nowrap}
+.pill.g{background:var(--green);color:#fff}
+.addbar{margin:14px 14px 0}
+
+.arch{display:block;width:calc(100% - 28px);margin:10px 14px 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;text-align:left}
+.arch.empty{opacity:.55}
+.arch .ab{height:10px;border-radius:999px;background:var(--line);margin-top:10px;overflow:hidden}
+.arch .ab i{display:block;height:100%;border-radius:999px}
+.stat{display:flex;gap:14px;font-size:13.5px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+.stat b{color:var(--ink)}
+.empty-s{margin:40px 24px;text-align:center}
+.empty-s .big{font-size:56px}
+
+.login{min-height:100vh;background:var(--green);color:#fff;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+.login .mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 28px}
+.login h1{font-size:40px;line-height:1.15;margin:0 0 10px}
+.login p{opacity:.92;margin:0 0 28px;font-size:17px}
+.code{font-size:34px;font-weight:700;letter-spacing:6px;text-align:center;background:var(--bg);border-radius:16px;padding:12px;margin:10px 0;font-family:ui-monospace,monospace}
+
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:none;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:20}
+.tab{display:flex;flex-direction:column;align-items:center;gap:0;padding:5px 0;border-radius:14px;font-size:12.5px;color:var(--muted)}
+.tab .i{font-size:21px;line-height:1.3}
+.tab.on{background:var(--tabon);color:var(--green);font-weight:700}
+@media (prefers-color-scheme:dark){.tab.on{color:#3DD9A0}}
+
+#sheet{display:none;position:fixed;inset:0;z-index:50}
+#sheet.open{display:block}
+.scrim{position:absolute;inset:0;background:rgba(8,12,20,.55)}
+.panel{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-radius:26px 26px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto;animation:up .2s ease-out}
+.panel h3{margin:6px 0 4px;font-size:20px}
+.grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 8px}
+@keyframes up{from{transform:translate(-50%,28px);opacity:0}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);gap:10px}
+.kv:last-child{border-bottom:0}
+#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#18212F;color:#fff;padding:10px 18px;border-radius:999px;font-size:14.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:92vw;text-align:center}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="body"></div>
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-v="home" onclick="go('home')"><span class="i">🏠</span>হোম</button>
+    <button class="tab" data-v="meals" onclick="go('meals')"><span class="i">🍚</span>মিল</button>
+    <button class="tab" data-v="bazar" onclick="go('bazar')"><span class="i">🛒</span>বাজার</button>
+    <button class="tab" data-v="pay" onclick="go('pay')"><span class="i">💰</span>জমা</button>
+    <button class="tab" data-v="archive" onclick="go('archive')"><span class="i">🗂️</span>আর্কাইভ</button>
+  </nav>
+</div>
+<div id="sheet"></div>
+<div id="toast"></div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signOut} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,getFirestore,doc,collection,getDoc,getDocs,setDoc,addDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,arrayUnion,writeBatch} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAfXHXqgMC3KkYTNOM6K8ghN4L8GCha9eM",
+  authDomain: "mess-hishab-5d901.firebaseapp.com",
+  projectId: "mess-hishab-5d901",
+  storageBucket: "mess-hishab-5d901.firebasestorage.app",
+  messagingSenderId: "1035592385649",
+  appId: "1:1035592385649:web:1dd3171f1e746f1088c7d0"
+};
+const fbApp=initializeApp(firebaseConfig);
+const auth=getAuth(fbApp);
+let db;
+try{db=initializeFirestore(fbApp,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});}
+catch(e){db=getFirestore(fbApp);}
+
+/* ---------- constants & helpers ---------- */
+const MONTHS=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+const WD=['রবি','সোম','মঙ্গল','বুধ','বৃহস্পতি','শুক্র','শনি'];
+const COLORS=['#D42B2E','#E59A00','#0B8A85','#D92E78','#3E2BB0','#0B6B4D','#E86A00','#2D6FE0'];
+const MAX_MEMBERS=20;
+const BN=n=>Number(n).toLocaleString('bn-BD',{maximumFractionDigits:0});
+const BN2=n=>Number(n).toLocaleString('bn-BD',{minimumFractionDigits:2,maximumFractionDigits:2});
+const BNp=n=>Number(n).toLocaleString('bn-BD',{useGrouping:false,maximumFractionDigits:0});
+const money=n=>'৳ '+BN(Math.round(n));
+const pad=n=>String(n).padStart(2,'0');
+const ymOf=d=>d.getFullYear()+'-'+pad(d.getMonth()+1);
+const parseYm=s=>{const [y,m]=s.split('-').map(Number);return {y,m}};
+const daysIn=ym=>{const {y,m}=parseYm(ym);return new Date(y,m,0).getDate()};
+const shiftYm=(ym,k)=>{const {y,m}=parseYm(ym);return ymOf(new Date(y,m-1+k,1))};
+const mLabel=ym=>{const {y,m}=parseYm(ym);return MONTHS[m-1]+' '+BNp(y)};
+const wdOf=(ym,d)=>{const {y,m}=parseYm(ym);return new Date(y,m-1,d).getDay()};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toNum=s=>{const v=parseFloat(String(s).replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/[,\s৳]/g,''));return isNaN(v)?0:v};
+const $=s=>document.querySelector(s);
+const initial=n=>Array.from(String(n||'').trim())[0]||'?';
+const tfmt=ts=>{const d=ts&&ts.toDate?ts.toDate():null;return d?d.toLocaleString('bn-BD',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}):'';};
+const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;};
+
+const NOW=new Date();
+const CUR=ymOf(NOW), TODAY=NOW.getDate();
+const MIN_YM=shiftYm(CUR,-11);
+
+/* ---------- state ---------- */
+let user=null,authReady=false,profLoading=false,prof=null;
+let D={mess:null,members:[],cur:null,log:[],ready:{},err:null};
+let A={},archState='idle';
+let view='home',vm=CUR,selDay=TODAY,needCenter=true,pend=null,raf=0,dirty=false,busyF=false;
+let unsubs=[],munsubs=[];
+
+const me=()=>D.members.find(x=>x.id===(prof&&prof.memberId))||{};
+const isMgr=()=>me().role==='manager';
+const memName=id=>(D.members.find(x=>x.id===id)||{name:'?'}).name;
+const memIdx=id=>Math.max(0,D.members.findIndex(x=>x.id===id));
+const dutyOf=day=>{const c=D.cur&&D.cur.mdoc;return c&&c.duty?c.duty[day]:null;};
+const canMeal=(day,id)=>isMgr()||id===me().id||dutyOf(day)===me().id;
+const canBazar=(day,mid)=>isMgr()||mid===me().id||dutyOf(day)===me().id;
+const dateLabel=(ym,d)=>BNp(d)+' '+MONTHS[parseYm(ym).m-1]+', '+WD[wdOf(ym,d)];
+const rentOf=m=>m&&m.rent!=null?m.rent:((D.mess&&D.mess.rent)||0);
+const otherOf=m=>m&&m.other!=null?m.other:((D.mess&&D.mess.other)||0);
+const sub=n=>collection(db,'messes',prof.messId,n);
+const werr=e=>{console.error(e);toast(e&&e.code==='permission-denied'?'অনুমতি নেই। Firestore rules ঠিক আছে কি না দেখুন':'সংরক্ষণ করা যায়নি, ইন্টারনেট দেখুন');};
+const fail=e=>{console.error(e);D.err=(e&&e.code==='permission-denied')?'perm':'load';rr();};
+function logit(text){addDoc(sub('log'),{at:serverTimestamp(),by:me().name||'',uid:user.uid,text}).catch(()=>{});}
+
+/* ---------- auth & data loading ---------- */
+onAuthStateChanged(auth,async u=>{
+  user=u;authReady=true;
+  if(!u){detach();prof=null;D={mess:null,members:[],cur:null,log:[],ready:{},err:null};render();return;}
+  profLoading=true;render();
+  try{
+    const s=await getDoc(doc(db,'users',u.uid));
+    prof=s.exists()?s.data():null;
+  }catch(e){console.error(e);prof=null;D.err=(e&&e.code==='permission-denied')?'perm':'load';}
+  profLoading=false;
+  if(prof&&prof.messId)listen();
+  render();
+});
+function detach(){unsubs.forEach(f=>f());munsubs.forEach(f=>f());unsubs=[];munsubs=[];}
+function listen(){
+  detach();
+  D={mess:null,members:[],cur:null,log:[],ready:{},err:null};
+  const mid=prof.messId;
+  unsubs.push(onSnapshot(doc(db,'messes',mid),s=>{D.mess=s.exists()?s.data():null;D.ready.mess=true;rr();},fail));
+  unsubs.push(onSnapshot(collection(db,'messes',mid,'members'),s=>{D.members=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));D.ready.members=true;rr();},fail));
+  unsubs.push(onSnapshot(query(collection(db,'messes',mid,'log'),orderBy('at','desc'),limit(15)),s=>{D.log=s.docs.map(d=>d.data({serverTimestamps:'estimate'}));rr();},fail));
+  listenMonth();
+}
+function listenMonth(){
+  munsubs.forEach(f=>f());munsubs=[];
+  const ym=vm,mid=prof.messId;
+  D.cur={ym,ready:false,mdoc:null,meals:{},bazar:[],pays:[]};
+  const got=new Set();
+  const mark=k=>{got.add(k);if(got.size>=4)D.cur.ready=true;};
+  const live=()=>D.cur&&D.cur.ym===ym;
+  munsubs.push(onSnapshot(doc(db,'messes',mid,'months',ym),s=>{if(!live())return;D.cur.mdoc=s.exists()?s.data():null;mark('m');rr();},fail));
+  munsubs.push(onSnapshot(query(collection(db,'messes',mid,'meals'),where('ym','==',ym)),s=>{if(!live())return;const o={};s.docs.forEach(d=>{const v=d.data({serverTimestamps:'estimate'});o[v.day]=v;});D.cur.meals=o;mark('l');rr();},fail));
+  munsubs.push(onSnapshot(query(collection(db,'messes',mid,'bazar'),where('ym','==',ym)),s=>{if(!live())return;D.cur.bazar=s.docs.map(d=>({id:d.id,...d.data()}));mark('b');rr();},fail));
+  munsubs.push(onSnapshot(query(collection(db,'messes',mid,'pays'),where('ym','==',ym)),s=>{if(!live())return;D.cur.pays=s.docs.map(d=>({id:d.id,...d.data()}));mark('p');rr();},fail));
+}
+async function loadArchive(){
+  archState='loading';render();
+  try{
+    const q=n=>getDocs(query(sub(n),where('ym','>=',MIN_YM)));
+    const [ms,bz,py,mo]=await Promise.all([q('meals'),q('bazar'),q('pays'),getDocs(sub('months'))]);
+    const out={};
+    const g=ym=>out[ym]||(out[ym]={mdoc:null,meals:{},bazar:[],pays:[]});
+    mo.docs.forEach(d=>{if(d.id>=MIN_YM)g(d.id).mdoc=d.data();});
+    ms.docs.forEach(d=>{const v=d.data();g(v.ym).meals[v.day]=v;});
+    bz.docs.forEach(d=>{const v=d.data();g(v.ym).bazar.push({id:d.id,...v});});
+    py.docs.forEach(d=>{const v=d.data();g(v.ym).pays.push({id:d.id,...v});});
+    A=out;archState='done';
+  }catch(e){console.error(e);archState='error';}
+  render();
+}
+function rr(){
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    const ae=document.activeElement;
+    if(ae&&$('#body').contains(ae)&&/INPUT|SELECT|TEXTAREA/.test(ae.tagName)){dirty=true;return;}
+    render();
+  });
+}
+document.addEventListener('focusout',()=>{if(dirty){dirty=false;setTimeout(rr,80);}});
+
+/* ---------- calculation ---------- */
+function getMD(ym){
+  if(D.cur&&ym===D.cur.ym){const c=D.cur;return {rent:rentOf(c.mdoc),other:otherOf(c.mdoc),meals:c.meals,bazar:c.bazar,pays:c.pays};}
+  const a=A[ym];
+  return {rent:rentOf(a&&a.mdoc),other:otherOf(a&&a.mdoc),meals:a?a.meals:{},bazar:a?a.bazar:[],pays:a?a.pays:[]};
+}
+function calc(ym){
+  const base=getMD(ym);
+  const n=D.members.length||1;
+  const P={};
+  D.members.forEach((x,i)=>P[x.id]={id:x.id,name:x.name,i,mor:0,noon:0,night:0,guest:0,spent:0,dep:0,rentPaid:0});
+  for(const d in base.meals){const dm=(base.meals[d]&&base.meals[d].data)||{};for(const id in dm){const p=P[id],r=dm[id];if(p&&r){p.mor+=r[0]||0;p.noon+=r[1]||0;p.night+=r[2]||0;p.guest+=r[3]||0;}}}
+  let bazar=0;
+  base.bazar.forEach(b=>{bazar+=b.amount;if(P[b.mid])P[b.mid].spent+=b.amount;});
+  base.pays.forEach(p=>{if(P[p.mid]){if(p.type==='rent')P[p.mid].rentPaid+=p.amount;else P[p.mid].dep+=p.amount;}});
+  const list=Object.values(P);
+  list.forEach(p=>p.meals=p.mor+p.noon+p.night+p.guest);
+  const meals=list.reduce((s,p)=>s+p.meals,0);
+  const rate=meals?bazar/meals:0;
+  const rentEach=(base.rent||0)+(base.other||0)/n;
+  list.forEach(p=>{p.cost=p.meals*rate;p.bal=p.spent+p.dep-p.cost;p.rentDue=rentEach-p.rentPaid;});
+  const rentTotal=rentEach*D.members.length;
+  const rentPaid=list.reduce((s,p)=>s+p.rentPaid,0);
+  return {list,bazar,meals,rate,rentEach,rentTotal,rentPaid,m:base};
+}
+
+/* ---------- screens ---------- */
+function screenNow(){
+  if(!authReady)return 'loading';
+  if(!user)return 'login';
+  if(profLoading)return 'loading';
+  if(!prof||!prof.messId)return 'onboard';
+  if(!D.ready.mess||!D.ready.members){return D.err?'error':'loading';}
+  if(!D.mess)return 'onboard';
+  if(!me().id)return 'claim';
+  return 'app';
+}
+function render(){
+  const ws=window.scrollY;const sc=document.querySelector('.days');const sl=sc?sc.scrollLeft:0;
+  const s=screenNow();
+  let html;
+  if(s==='loading')html=vLoading();
+  else if(s==='login')html=vLogin();
+  else if(s==='error')html=vError();
+  else if(s==='onboard')html=vOnboard();
+  else if(s==='claim')html=vClaim();
+  else{
+    let body;
+    if(view==='settings')body=vSettings();
+    else if(view==='archive')body=vArchive();
+    else if(!D.cur||!D.cur.ready)body=vLoading();
+    else body=({home:vHome,meals:vMeals,bazar:vBazar,pay:vPay})[view]();
+    html=topbar()+banner()+(D.err?`<div class="errb">ডেটা লোড করা যাচ্ছে না। ${D.err==='perm'?'Firestore Rules ঠিকভাবে Publish হয়েছে কি না দেখুন।':'ইন্টারনেট সংযোগ দেখুন।'}</div>`:'')+body;
+  }
+  $('#body').innerHTML=html;
+  $('#tabs').style.display=s==='app'?'grid':'none';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
+  const sc2=document.querySelector('.days');
+  if(sc2){
+    if(needCenter){const e=sc2.querySelector('.sel');if(e)sc2.scrollLeft=e.offsetLeft-sc2.clientWidth/2+e.clientWidth/2;needCenter=false;}
+    else sc2.scrollLeft=sl;
+  }
+  window.scrollTo(0,ws);
+}
+function vLoading(){return `<div class="empty-s"><div class="big">⏳</div><p class="muted">লোড হচ্ছে...</p></div>`;}
+function vError(){return `<div class="empty-s"><div class="big">⚠️</div><h2>ডেটা লোড হয়নি</h2><p class="muted">${D.err==='perm'?'Firestore Rules ঠিকভাবে Publish হয়েছে কি না দেখুন।':'ইন্টারনেট সংযোগ দেখুন।'}</p><button class="btn" onclick="location.reload()">আবার চেষ্টা করুন</button><div style="height:10px"></div><button class="btn ghost" onclick="doLogout()">লগআউট</button></div>`;}
+function vLogin(){
+  return `<div class="login"><div class="bead" style="border-radius:0"></div><div class="mid"><div style="font-size:56px">🍚</div><h1>মেস হিসাব</h1><p>মিল, বাজার আর ভাড়ার হিসাব, মেসের সবাই একসাথে দেখুন।</p><button class="btn white" onclick="doLogin()">Google দিয়ে লগইন করুন</button></div><div class="bead" style="border-radius:0"></div></div>`;
+}
+function vOnboard(){
+  const nm=esc(((user&&user.displayName)||'').split(' ')[0]);
+  return `<div class="head"><div class="mname">স্বাগতম 👋</div><div class="msub">${esc((user&&user.email)||'')}</div></div><div class="bead"></div>
+  <div class="card"><b style="font-size:18px">নতুন মেস খুলুন</b><div class="muted" style="font-size:14px">আপনি ম্যানেজার হবেন</div>
+  <label>মেসের নাম</label><input id="oMess" placeholder="যেমন: সবুজ মেস">
+  <label>আপনার নাম</label><input id="oName" value="${nm}" placeholder="আপনার নাম">
+  <div style="height:14px"></div><button class="btn" onclick="createMess()">মেস তৈরি করুন</button></div>
+  <div class="card"><b style="font-size:18px">কোড দিয়ে জয়েন করুন</b><div class="muted" style="font-size:14px">ম্যানেজারের কাছ থেকে ৬ অক্ষরের কোড নিন</div>
+  <label>মেসের কোড</label><input id="oCode" placeholder="যেমন: K7M2QX" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:3px">
+  <div style="height:14px"></div><button class="btn sun" onclick="joinMess()">জয়েন করুন</button></div>
+  <div class="addbar"><button class="btn ghost" onclick="doLogout()">লগআউট</button></div>`;
+}
+function vClaim(){
+  const free=D.members.filter(x=>!x.uid);
+  let h=`<div class="head"><div class="mname">${esc((D.mess&&D.mess.name)||'')}</div><div class="msub">মেসে যুক্ত হয়েছেন</div></div><div class="bead"></div><div class="sec">আপনি কোন সদস্য?<small>নিজের নামে ট্যাপ করুন</small></div>`;
+  if(!free.length)h+=`<div class="card"><p>এখনো কোনো নাম খালি নেই। ম্যানেজারকে বলুন আপনার নাম যোগ করতে, তারপর রিফ্রেশ করুন।</p><button class="btn" onclick="location.reload()">রিফ্রেশ</button></div>`;
+  free.forEach(x=>{h+=`<button class="mem" onclick="claim('${x.id}')"><div class="av" style="background:${COLORS[memIdx(x.id)%COLORS.length]}">${esc(initial(x.name))}</div><div class="mi"><div class="mn">${esc(x.name)}</div></div></button>`;});
+  h+=`<div class="addbar"><button class="btn ghost" onclick="doLogout()">লগআউট</button></div>`;
+  return h;
+}
+function topbar(){
+  const showMonth=['home','meals','bazar','pay'].includes(view);
+  let h=`<div class="head"><div class="top"><div style="min-width:0"><div class="mname">${esc(D.mess.name)}</div><div class="msub">${esc(me().name)} · ${isMgr()?'ম্যানেজার':'সদস্য'} · ${BNp(D.members.length)} জন</div></div><button class="ico" aria-label="সেটিংস" onclick="go('settings')">⚙️</button></div>`;
+  if(showMonth)h+=`<div class="monthbar"><button class="arr" aria-label="আগের মাস" ${vm<=MIN_YM?'disabled':''} onclick="shiftView(-1)">‹</button><b>${mLabel(vm)}</b><button class="arr" aria-label="পরের মাস" ${vm>=CUR?'disabled':''} onclick="shiftView(1)">›</button></div>`;
+  return h+`</div><div class="bead"></div>`;
+}
+function banner(){
+  if(['home','meals','bazar','pay'].includes(view)&&vm!==CUR)return `<div class="oldm"><span>আপনি পুরোনো মাসের হিসাব দেখছেন</span><button onclick="goCur()">চলতি মাসে ফিরুন</button></div>`;
+  return '';
+}
+function vHome(){
+  const c=calc(vm);
+  const pct=c.rentTotal?Math.min(100,Math.round(c.rentPaid/c.rentTotal*100)):0;
+  const due=Math.max(0,c.rentTotal-c.rentPaid);
+  const mp=c.list.find(p=>p.id===me().id);
+  let h=`<section class="hero"><div class="hl">এই মাসের মিলরেট</div><div class="rate">৳ ${BN2(c.rate)}</div><div class="hs">প্রতি মিলের খরচ</div>
+  <div class="chips"><div class="chip c1"><b>${money(c.bazar)}</b><span>মোট বাজার</span></div><div class="chip c2"><b>${BNp(c.meals)}টি</b><span>মোট মিল</span></div><div class="chip c3"><b>${BNp(pct)}%</b><span>ভাড়া আদায়</span></div></div></section>`;
+  if(mp)h+=`<button class="card mine" style="display:block;width:calc(100% - 28px);text-align:left" onclick="openMember('${mp.id}')"><div class="row"><b>আমার হিসাব</b><span class="tag sun">${BNp(mp.meals)} মিল</span></div>
+  <div class="row" style="margin-top:8px"><span>মিলের হিসাবে <b class="${mp.bal<0?'neg':'pos'}">${Math.round(mp.bal)<0?'দেবে':'পাবে'} ${money(Math.abs(mp.bal))}</b></span><span>ভাড়া বাকি <b class="${mp.rentDue>0.5?'neg':'pos'}">${money(Math.max(0,mp.rentDue))}</b></span></div></button>`;
+  h+=`<div class="card"><div class="row"><b>ভাড়া ও বিল</b><span class="muted">জনপ্রতি ${money(c.rentEach)}</span></div><div class="bar"><i style="width:${pct}%"></i></div><div class="row"><span>আদায় <b class="pos">${money(c.rentPaid)}</b></span><span>বাকি <b class="${due>0?'neg':'pos'}">${money(due)}</b></span></div></div>`;
+  h+=`<div class="sec">সদস্যদের হিসাব<small>ট্যাপ করে বিস্তারিত দেখুন</small></div>`;
+  c.list.forEach(p=>{
+    h+=`<button class="mem" onclick="openMember('${p.id}')"><div class="av" style="background:${COLORS[p.i%COLORS.length]}">${esc(initial(p.name))}</div>
+    <div class="mi"><div class="mn">${esc(p.name)}${p.id===me().id?' <span class="tag sun">আমি</span>':''}</div><div class="mm"><b style="color:var(--ink)">${BNp(p.meals)} মিল</b><span><i class="d m"></i>${BNp(p.mor)}</span><span><i class="d n"></i>${BNp(p.noon)}</span><span><i class="d t"></i>${BNp(p.night)}</span>${p.guest?`<span>গেস্ট ${BNp(p.guest)}</span>`:''}</div></div>
+    <div class="mb"><div class="amt ${p.bal<0?'neg':'pos'}">${money(Math.abs(p.bal))}</div><div class="lb">${Math.round(p.bal)<0?'দেবে':'পাবে'}</div></div></button>`;
+  });
+  if(D.log.length){
+    h+=`<div class="sec">সাম্প্রতিক কার্যক্রম<small>কে কী করেছে</small></div><div class="card" style="padding:6px 16px">`;
+    D.log.slice(0,10).forEach(l=>{h+=`<div class="logi">${esc(l.text)}<small>${esc(tfmt(l.at))}</small></div>`;});
+    h+=`</div>`;
+  }
+  return h;
+}
+function vMeals(){
+  const dn=daysIn(vm);
+  const dd=D.cur.meals[selDay]||{};
+  const rec=dd.data||{};
+  const get=id=>rec[id]||[0,0,0,0];
+  const t=[0,0,0,0];
+  D.members.forEach(x=>{const r=get(x.id);for(let i=0;i<4;i++)t[i]+=r[i]||0;});
+  let h=`<div class="days">`;
+  for(let d=1;d<=dn;d++){
+    const has=D.cur.meals[d]&&D.cur.meals[d].data&&Object.values(D.cur.meals[d].data).some(r=>r&&r.some(v=>v));
+    h+=`<button class="day ${d===selDay?'sel':''}" onclick="pickDay(${d})"><small>${WD[wdOf(vm,d)]}</small><b>${BNp(d)}</b>${has?'<i></i>':''}</button>`;
+  }
+  h+=`</div><div class="sec" style="margin-top:12px">${dateLabel(vm,selDay)}</div>`;
+  const dm=dutyOf(selDay);
+  h+=`<div class="card" style="margin-top:10px;padding:10px 14px"><div class="row"><span>🧑‍🍳 দায়িত্বে: <b>${dm?esc(memName(dm)):'ঠিক করা হয়নি'}</b></span>${isMgr()?'<button class="pill" onclick="openDuty()">বদলান</button>':''}</div>${dd.by?`<div class="muted" style="font-size:13px;margin-top:4px">শেষ আপডেট: ${esc(dd.by)}${dd.at?', '+esc(tfmt(dd.at)):''}</div>`:''}</div>`;
+  h+=`<div class="tot3"><div class="tt a"><b>${BNp(t[0])}</b>সকাল</div><div class="tt b"><b>${BNp(t[1])}</b>দুপুর</div><div class="tt c"><b>${BNp(t[2])}</b>রাত</div><div class="tt g"><b>${BNp(t[3])}</b>গেস্ট</div></div>`;
+  if(isMgr()||dm===me().id)h+=`<div class="bulk"><span>সবার</span><button onclick="bulk(0)">সকাল</button><button onclick="bulk(1)">দুপুর</button><button onclick="bulk(2)">রাত</button></div>`;
+  else h+=`<p class="muted" style="margin:12px 16px 0;font-size:14px">আপনি শুধু নিজের মিল বদলাতে পারবেন। অন্যের মিল বদলাতে পারবে ম্যানেজার ও ওই দিনের দায়িত্বশীল।</p>`;
+  D.members.forEach((x,i)=>{
+    const r=get(x.id);const ok=canMeal(selDay,x.id);const dis=ok?'':'disabled';
+    h+=`<div class="mrow ${x.id===me().id?'me':''}"><div class="row"><div class="av sm" style="background:${COLORS[i%COLORS.length]}">${esc(initial(x.name))}</div><div class="nm">${esc(x.name)}</div>
+    <div class="gst">গেস্ট<button ${dis} aria-label="গেস্ট কমান" onclick="gs('${x.id}',-1)">−</button><span>${BNp(r[3]||0)}</span><button ${dis} aria-label="গেস্ট বাড়ান" onclick="gs('${x.id}',1)">+</button></div></div>
+    <div class="slots"><button ${dis} class="slot m ${r[0]?'on':''}" onclick="tg('${x.id}',0)">সকাল</button><button ${dis} class="slot n ${r[1]?'on':''}" onclick="tg('${x.id}',1)">দুপুর</button><button ${dis} class="slot t ${r[2]?'on':''}" onclick="tg('${x.id}',2)">রাত</button></div></div>`;
+  });
+  return h;
+}
+function vBazar(){
+  const c=calc(vm),m=c.m;
+  const list=[...m.bazar].sort((a,b)=>b.day-a.day);
+  let h=`<div class="hero" style="background:var(--green)"><div class="hl">এই মাসের মোট বাজার</div><div class="rate">${money(c.bazar)}</div><div class="hs">${BNp(list.length)}টি বাজারের এন্ট্রি</div></div>`;
+  h+=`<div class="addbar"><button class="btn sun" onclick="openBazar()">+ বাজার যোগ করুন</button></div>`;
+  if(!list.length)return h+`<div class="empty-s"><div class="big">🛒</div><p class="muted">এই মাসে এখনো কোনো বাজার যোগ হয়নি।</p></div>`;
+  h+=`<div class="card" style="padding:4px 16px">`;
+  list.forEach(b=>{
+    h+=`<div class="item"><div class="dt"><div><b>${BNp(b.day)}</b><br><small>${WD[wdOf(vm,b.day)]}</small></div></div><button class="grow" style="text-align:left" onclick="openBazar('${b.id}')"><div style="font-weight:600">${esc(memName(b.mid))}</div><div class="muted" style="font-size:14px">${esc(b.note||'বাজার')}</div></button><b>${money(b.amount)}</b>${canBazar(b.day,b.mid)?`<button class="x" aria-label="মুছুন" onclick="delBazar('${b.id}')">✕</button>`:''}</div>`;
+  });
+  return h+`</div>`;
+}
+function vPay(){
+  const c=calc(vm),m=c.m;
+  const due=Math.max(0,c.rentTotal-c.rentPaid);
+  const mg=isMgr();
+  let h=`<div class="card" style="margin-top:16px"><div class="row"><b>ভাড়া ও বিল (জনপ্রতি)</b>${mg?'<button class="pill" onclick="openRent()">পরিবর্তন</button>':''}</div>
+  <div class="kv"><span class="muted">মেসের ভাড়া</span><b>${money(m.rent)}</b></div>
+  <div class="kv"><span class="muted">অন্যান্য বিল (মোট ${money(m.other)})</span><b>${money(m.other/(D.members.length||1))}</b></div>
+  <div class="kv"><span>জনপ্রতি মোট</span><b>${money(c.rentEach)}</b></div>
+  <div class="kv"><span>মোট আদায়</span><b class="pos">${money(c.rentPaid)}</b></div>
+  <div class="kv"><span>মোট বাকি</span><b class="${due>0?'neg':'pos'}">${money(due)}</b></div></div>`;
+  h+=`<div class="sec">সদস্যদের ভাড়া<small>বাকি থাকলে লাল</small></div>`;
+  c.list.forEach(p=>{
+    const rd=Math.round(p.rentDue);
+    h+=`<div class="mem" style="cursor:default"><div class="av" style="background:${COLORS[p.i%COLORS.length]}">${esc(initial(p.name))}</div>
+    <div class="mi"><div class="mn">${esc(p.name)}</div><div class="mm">জমা ${money(p.rentPaid)}</div></div>
+    <div class="mb">${rd>0?`<span class="tag bad">বাকি ${money(rd)}</span>`:`<span class="tag ok">পরিশোধিত</span>`}</div>
+    ${mg?`<button class="pill g" onclick="openPay('${p.id}','rent')">জমা</button>`:''}</div>`;
+  });
+  const pays=[...m.pays].sort((a,b)=>b.day-a.day);
+  h+=`<div class="sec">জমার তালিকা${mg?'<button class="pill" onclick="openPay(\'\',\'meal\')">+ মিলের টাকা</button>':''}</div>`;
+  if(!pays.length)return h+`<p class="muted" style="margin:14px 16px">এই মাসে কোনো জমা নেই।</p>`;
+  h+=`<div class="card" style="padding:4px 16px">`;
+  pays.forEach(p=>{
+    h+=`<div class="item"><div class="dt"><div><b>${BNp(p.day)}</b><br><small>${WD[wdOf(vm,p.day)]}</small></div></div><div class="grow"><div style="font-weight:600">${esc(memName(p.mid))}</div><div class="muted" style="font-size:14px">${p.type==='rent'?'ভাড়া ও বিল':'মিলের টাকা'}</div></div><b class="pos">${money(p.amount)}</b>${mg?`<button class="x" aria-label="মুছুন" onclick="delPay('${p.id}')">✕</button>`:''}</div>`;
+  });
+  return h+`</div>`;
+}
+function vArchive(){
+  if(archState==='idle'){loadArchive();return vLoading();}
+  if(archState==='loading')return vLoading();
+  if(archState==='error')return `<div class="empty-s"><div class="big">⚠️</div><p class="muted">আর্কাইভ লোড হয়নি।</p><button class="btn" onclick="loadArchive()">আবার চেষ্টা করুন</button></div>`;
+  const rows=[];
+  for(let k=0;k<12;k++){const ym=shiftYm(CUR,-k);const a=A[ym];const has=!!a&&(a.bazar.length>0||Object.keys(a.meals).length>0);rows.push({ym,c:calc(ym),has});}
+  const maxRate=Math.max(1,...rows.map(r=>r.c.rate));
+  let h=`<div class="sec" style="margin-top:16px">গত ১২ মাসের হিসাব<small>ট্যাপ করে খুলুন</small></div>`;
+  rows.forEach((r,idx)=>{
+    const col=COLORS[idx%COLORS.length];
+    h+=`<button class="arch ${r.has?'':'empty'}" onclick="openMonth('${r.ym}')"><div class="row"><b style="font-size:17px">${mLabel(r.ym)}</b>${r.has?`<span class="amt" style="color:${col}">৳ ${BN2(r.c.rate)}<span class="lb"> /মিল</span></span>`:`<span class="muted">তথ্য নেই</span>`}</div>
+    ${r.has?`<div class="stat"><span>বাজার <b>${money(r.c.bazar)}</b></span><span>মিল <b>${BNp(r.c.meals)}টি</b></span><span>ভাড়া আদায় <b>${money(r.c.rentPaid)}</b></span></div><div class="ab"><i style="width:${Math.round(r.c.rate/maxRate*100)}%;background:${col}"></i></div>`:''}</button>`;
+  });
+  return h;
+}
+function vSettings(){
+  const mg=isMgr();
+  let h=`<div class="head"><div class="top"><div class="mname">সেটিংস</div><button class="ico" aria-label="ফিরে যান" onclick="go('home')">✕</button></div></div><div class="bead"></div>
+  <div class="card"><b>মেসের কোড</b><div class="muted" style="font-size:14px">নতুন সদস্য এই কোড দিয়ে জয়েন করবে</div><div class="code">${esc(D.mess.code||'')}</div><button class="btn sun" onclick="shareCode()">কোড শেয়ার করুন</button></div>`;
+  if(mg)h+=`<div class="card"><b>মেসের নাম</b><input value="${esc(D.mess.name)}" onchange="renameMess(this.value)" aria-label="মেসের নাম" style="margin-top:8px"></div>`;
+  h+=`<div class="sec">সদস্য<small>${BNp(D.members.length)}/${BNp(MAX_MEMBERS)}</small></div><div class="card" style="padding:4px 16px">`;
+  D.members.forEach((x,i)=>{
+    h+=`<div class="item"><div class="av sm" style="background:${COLORS[i%COLORS.length]}">${esc(initial(x.name))}</div><div class="grow"><div style="font-weight:600">${esc(x.name)}${x.role==='manager'?' <span class="tag sun">ম্যানেজার</span>':''}</div><div class="muted" style="font-size:13px">${x.uid?'অ্যাপে যুক্ত':'এখনো যুক্ত হয়নি'}</div></div>${mg?`<button class="x" style="color:var(--ink)" aria-label="নাম বদলান" onclick="editMember('${x.id}')">✏️</button>${x.role==='manager'?'':`<button class="x" aria-label="মুছুন" onclick="delMember('${x.id}')">🗑️</button>`}`:''}</div>`;
+  });
+  h+=`</div>`;
+  if(mg){
+    if(D.members.length<MAX_MEMBERS)h+=`<div class="card"><label style="margin-top:0">নতুন সদস্যের নাম</label><div class="row"><input id="newMember" placeholder="যেমন: রাফি" onkeydown="if(event.key==='Enter')addMember()"><button class="pill g" onclick="addMember()">যোগ করুন</button></div><p class="muted" style="font-size:13.5px;margin:10px 0 0">নাম যোগ করার পর সদস্যকে মেসের কোড দিন। সে জয়েন করে নিজের নামে ট্যাপ করবে।</p></div>`;
+    else h+=`<p class="muted" style="margin:14px 16px">সর্বোচ্চ ${BNp(MAX_MEMBERS)} জন সদস্য যোগ করা যায়।</p>`;
+  }
+  h+=`<div class="addbar"><button class="btn ghost" onclick="doLogout()">লগআউট (${esc((user&&user.email)||'')})</button></div>`;
+  return h;
+}
+
+/* ---------- sheet / toast ---------- */
+function sheet(title,html){$('#sheet').innerHTML=`<div class="scrim" onclick="closeSheet()"></div><div class="panel" role="dialog" aria-label="${esc(title)}"><div class="grab"></div><h3>${esc(title)}</h3>${html}</div>`;$('#sheet').classList.add('open');}
+function closeSheet(){$('#sheet').classList.remove('open');}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2600);}
+function ask(msg,fn,label){pend=fn;sheet('নিশ্চিত করুন',`<p>${esc(msg)}</p><button class="btn danger" onclick="runPend()">${esc(label||'মুছে ফেলুন')}</button><div style="height:8px"></div><button class="btn ghost" onclick="closeSheet()">বাতিল</button>`);}
+function runPend(){const f=pend;pend=null;closeSheet();if(f)f();}
+function dayOpts(sel){let o='';for(let d=1;d<=daysIn(vm);d++)o+=`<option value="${d}" ${d===sel?'selected':''}>${dateLabel(vm,d)}</option>`;return o;}
+function memOpts(sel){return D.members.map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.name)}</option>`).join('');}
+const deny=()=>toast('এটি বদলানোর অনুমতি আপনার নেই');
+
+/* ---------- login / onboarding ---------- */
+async function doLogin(){
+  const p=new GoogleAuthProvider();
+  try{await signInWithPopup(auth,p);}
+  catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){signInWithRedirect(auth,p);}
+    else if(e.code==='auth/unauthorized-domain'){toast('এই ওয়েবসাইট Firebase-এ অনুমোদিত নয় (Authorized domains-এ যোগ করুন)');}
+    else if(e.code==='auth/operation-not-allowed'){toast('Firebase-এ Google লগইন চালু করা হয়নি');}
+    else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){toast('লগইন হয়নি: '+(e.code||''));}
+  }
+}
+async function doLogout(){try{await signOut(auth);}catch(e){}view='home';}
+async function createMess(){
+  if(busyF)return;
+  const mn=$('#oMess').value.trim(),nm=$('#oName').value.trim();
+  if(!mn||!nm){toast('মেসের নাম ও আপনার নাম লিখুন');return;}
+  busyF=true;toast('তৈরি হচ্ছে...');
+  try{
+    let code,tries=0;
+    do{code=genCode();tries++;}while((await getDoc(doc(db,'codes',code))).exists()&&tries<6);
+    const mref=doc(collection(db,'messes')),memRef=doc(collection(db,'messes',mref.id,'members'));
+    const b=writeBatch(db);
+    b.set(mref,{name:mn,code,manager:user.uid,uids:[user.uid],rent:0,other:0,createdAt:serverTimestamp()});
+    b.set(memRef,{name:nm,role:'manager',uid:user.uid,order:1});
+    b.set(doc(db,'codes',code),{messId:mref.id});
+    b.set(doc(db,'users',user.uid),{messId:mref.id,memberId:memRef.id});
+    await b.commit();
+    prof={messId:mref.id,memberId:memRef.id};
+    listen();render();
+  }catch(e){werr(e);}
+  busyF=false;
+}
+async function joinMess(){
+  if(busyF)return;
+  const code=$('#oCode').value.trim().toUpperCase().replace(/\s/g,'');
+  if(code.length<4){toast('মেসের কোড লিখুন');return;}
+  busyF=true;toast('খোঁজা হচ্ছে...');
+  try{
+    const c=await getDoc(doc(db,'codes',code));
+    if(!c.exists()){toast('কোডটি ঠিক নয়');busyF=false;return;}
+    const messId=c.data().messId;
+    const ms=await getDoc(doc(db,'messes',messId));
+    if(!ms.exists()){toast('মেস পাওয়া যায়নি');busyF=false;return;}
+    if(!(ms.data().uids||[]).includes(user.uid))await updateDoc(doc(db,'messes',messId),{uids:arrayUnion(user.uid)});
+    await setDoc(doc(db,'users',user.uid),{messId,memberId:null});
+    prof={messId,memberId:null};
+    listen();render();
+  }catch(e){werr(e);}
+  busyF=false;
+}
+async function claim(id){
+  try{
+    await updateDoc(doc(db,'messes',prof.messId,'members',id),{uid:user.uid});
+    await setDoc(doc(db,'users',user.uid),{messId:prof.messId,memberId:id});
+    prof.memberId=id;view='home';render();
+  }catch(e){console.error(e);toast('এই নামটি আগেই অন্য কেউ নিয়েছে');}
+}
+
+/* ---------- navigation ---------- */
+function go(v){view=v;needCenter=true;if(v==='archive')archState='idle';render();window.scrollTo(0,0);}
+function setMonth(ym){vm=ym;selDay=ym===CUR?TODAY:1;needCenter=true;listenMonth();render();}
+function shiftView(k){const n=shiftYm(vm,k);if(n>CUR||n<MIN_YM)return;setMonth(n);}
+function goCur(){setMonth(CUR);}
+function openMonth(ym){view='home';setMonth(ym);window.scrollTo(0,0);}
+
+/* ---------- meals ---------- */
+function curRec(id){const d=D.cur.meals[selDay];return (d&&d.data&&d.data[id])?d.data[id].slice():[0,0,0,0];}
+function writeMeal(day,obj){
+  setDoc(doc(db,'messes',prof.messId,'meals',vm+'-'+pad(day)),{ym:vm,day,data:obj,by:me().name,uid:user.uid,at:serverTimestamp()},{merge:true}).catch(werr);
+}
+function pickDay(d){selDay=d;render();}
+function tg(id,s){if(!canMeal(selDay,id))return deny();const r=curRec(id);r[s]=r[s]?0:1;writeMeal(selDay,{[id]:r});}
+function gs(id,k){if(!canMeal(selDay,id))return deny();const r=curRec(id);r[3]=Math.max(0,(r[3]||0)+k);writeMeal(selDay,{[id]:r});}
+function bulk(s){
+  const ids=D.members.filter(x=>canMeal(selDay,x.id)).map(x=>x.id);
+  if(!ids.length)return deny();
+  const all=ids.every(id=>curRec(id)[s]);
+  const obj={};ids.forEach(id=>{const r=curRec(id);r[s]=all?0:1;obj[id]=r;});
+  writeMeal(selDay,obj);
+}
+function openDuty(){
+  if(!isMgr())return deny();
+  sheet('দায়িত্ব ঠিক করুন',`<p class="muted" style="margin:0">${dateLabel(vm,selDay)}</p><label>এই দিনের দায়িত্বশীল</label><select id="fDuty"><option value="">কেউ নয়</option>${memOpts(dutyOf(selDay)||'')}</select>
+  <div style="height:14px"></div><button class="btn" onclick="saveDuty()">সংরক্ষণ করুন</button>
+  <div style="height:8px"></div><button class="btn ghost" onclick="autoDuty()">পুরো মাস সমানভাবে ভাগ করুন</button>
+  <p class="muted" style="font-size:13.5px">দায়িত্বশীল ওই দিন সবার মিল ও বাজার এন্ট্রি দিতে পারবে।</p>`);
+}
+function saveDuty(){
+  const v=$('#fDuty').value||null;
+  setDoc(doc(db,'messes',prof.messId,'months',vm),{duty:{[selDay]:v}},{merge:true}).catch(werr);
+  logit(`${me().name} ${dateLabel(vm,selDay)}-এর দায়িত্ব দিয়েছে ${v?memName(v):'কাউকে নয়'}-কে`);
+  closeSheet();
+}
+function autoDuty(){
+  const n=D.members.length;if(!n)return;
+  const duty={};for(let d=1;d<=daysIn(vm);d++)duty[d]=D.members[(d-1)%n].id;
+  setDoc(doc(db,'messes',prof.messId,'months',vm),{duty},{merge:true}).catch(werr);
+  logit(`${me().name} ${mLabel(vm)} মাসের দায়িত্ব সবার মধ্যে সমানভাবে ভাগ করেছে`);
+  closeSheet();toast('দায়িত্ব ভাগ হয়েছে');
+}
+
+/* ---------- bazar ---------- */
+function openBazar(id){
+  const b=id?D.cur.bazar.find(x=>x.id===id):null;
+  if(b&&!canBazar(b.day,b.mid))return deny();
+  sheet(b?'বাজার সম্পাদনা':'বাজার যোগ করুন',`<label>তারিখ</label><select id="fDay">${dayOpts(b?b.day:(vm===CUR?TODAY:1))}</select>
+  <label>কে বাজার করেছে</label><select id="fMem">${memOpts(b?b.mid:me().id)}</select>
+  <label>কত টাকা খরচ হয়েছে</label><input id="fAmt" inputmode="decimal" placeholder="যেমন: ১২০০" value="${b?b.amount:''}">
+  <label>কী কেনা হয়েছে (ঐচ্ছিক)</label><input id="fNote" placeholder="যেমন: মাছ, সবজি" value="${b?esc(b.note||''):''}">
+  <div style="height:16px"></div><button class="btn" onclick="saveBazar('${id||''}')">সংরক্ষণ করুন</button>`);
+}
+function saveBazar(id){
+  const amount=toNum($('#fAmt').value);if(amount<=0){toast('টাকার পরিমাণ লিখুন');return;}
+  const data={ym:vm,day:+$('#fDay').value,mid:$('#fMem').value,amount,note:$('#fNote').value.trim()};
+  if(!canBazar(data.day,data.mid)){toast('এই তারিখে অন্যের বাজার যোগ করতে পারবেন না (ম্যানেজার বা ওই দিনের দায়িত্বশীল পারবে)');return;}
+  const ref=id?doc(db,'messes',prof.messId,'bazar',id):doc(sub('bazar'));
+  setDoc(ref,{...data,by:me().name,uid:user.uid,at:serverTimestamp()}).catch(werr);
+  logit(`${me().name} ${memName(data.mid)}-এর বাজার ${money(amount)} ${id?'সম্পাদনা':'যোগ'} করেছে (${dateLabel(vm,data.day)}${data.note?', '+data.note:''})`);
+  closeSheet();toast('সংরক্ষিত হয়েছে');
+}
+function delBazar(id){
+  const b=D.cur.bazar.find(x=>x.id===id);if(!b)return;if(!canBazar(b.day,b.mid))return deny();
+  ask('এই বাজারের এন্ট্রি মুছে ফেলবেন?',()=>{deleteDoc(doc(db,'messes',prof.messId,'bazar',id)).catch(werr);logit(`${me().name} ${memName(b.mid)}-এর ${money(b.amount)} বাজার মুছেছে (${dateLabel(vm,b.day)})`);toast('মুছে ফেলা হয়েছে');});
+}
+
+/* ---------- payments (manager) ---------- */
+function openPay(mid,type){
+  if(!isMgr())return deny();
+  const c=calc(vm);const p=c.list.find(x=>x.id===mid);
+  const pre=type==='rent'&&p?Math.max(0,Math.round(p.rentDue)):'';
+  sheet(type==='rent'?'ভাড়া ও বিল জমা':'মিলের টাকা জমা',`<label>সদস্য</label><select id="fMem">${memOpts(mid)}</select>
+  <label>ধরন</label><select id="fType"><option value="rent" ${type==='rent'?'selected':''}>ভাড়া ও বিল</option><option value="meal" ${type==='meal'?'selected':''}>মিলের টাকা জমা</option></select>
+  <label>তারিখ</label><select id="fDay">${dayOpts(vm===CUR?TODAY:1)}</select>
+  <label>কত টাকা জমা দিয়েছে</label><input id="fAmt" inputmode="decimal" placeholder="যেমন: ৩০০০" value="${pre}">
+  <div style="height:16px"></div><button class="btn" onclick="savePay()">জমা নিন</button>`);
+}
+function savePay(){
+  if(!isMgr())return deny();
+  const amount=toNum($('#fAmt').value);if(amount<=0){toast('টাকার পরিমাণ লিখুন');return;}
+  const d={ym:vm,day:+$('#fDay').value,mid:$('#fMem').value,type:$('#fType').value,amount,by:me().name,uid:user.uid,at:serverTimestamp()};
+  setDoc(doc(sub('pays')),d).catch(werr);
+  logit(`${me().name} ${memName(d.mid)}-এর ${d.type==='rent'?'ভাড়া':'মিলের'} ${money(amount)} জমা নিয়েছে (${dateLabel(vm,d.day)})`);
+  closeSheet();toast('জমা নেওয়া হয়েছে');
+}
+function delPay(id){
+  if(!isMgr())return deny();
+  const p=D.cur.pays.find(x=>x.id===id);if(!p)return;
+  ask('এই জমার এন্ট্রি মুছে ফেলবেন?',()=>{deleteDoc(doc(db,'messes',prof.messId,'pays',id)).catch(werr);logit(`${me().name} ${memName(p.mid)}-এর ${money(p.amount)} জমা মুছেছে`);toast('মুছে ফেলা হয়েছে');});
+}
+function openRent(){
+  if(!isMgr())return deny();
+  const m=getMD(vm);
+  sheet('ভাড়া নির্ধারণ',`<label>জনপ্রতি মেসের ভাড়া (টাকা)</label><input id="fRent" inputmode="decimal" value="${m.rent||''}" placeholder="যেমন: ৩০০০">
+  <label>অন্যান্য মাসিক বিল মোট (গ্যাস, ইন্টারনেট, বুয়া ইত্যাদি)</label><input id="fOther" inputmode="decimal" value="${m.other||''}" placeholder="যেমন: ১৮০০">
+  <p class="muted" style="font-size:14px">অন্যান্য বিল সব সদস্যের মধ্যে সমানভাবে ভাগ হবে। এই সংখ্যা পরের মাসগুলোতেও ডিফল্ট থাকবে।</p>
+  <button class="btn" onclick="saveRent()">সংরক্ষণ করুন</button>`);
+}
+function saveRent(){
+  if(!isMgr())return deny();
+  const rent=toNum($('#fRent').value),other=toNum($('#fOther').value);
+  setDoc(doc(db,'messes',prof.messId,'months',vm),{rent,other},{merge:true}).catch(werr);
+  updateDoc(doc(db,'messes',prof.messId),{rent,other}).catch(()=>{});
+  logit(`${me().name} ${mLabel(vm)} মাসের ভাড়া ${money(rent)} ও অন্যান্য বিল ${money(other)} ঠিক করেছে`);
+  closeSheet();toast('সংরক্ষিত হয়েছে');
+}
+
+/* ---------- member detail ---------- */
+function openMember(id){
+  const c=calc(vm),p=c.list.find(x=>x.id===id);if(!p)return;
+  const bz=c.m.bazar.filter(b=>b.mid===id).sort((a,b)=>a.day-b.day);
+  const ps=c.m.pays.filter(x=>x.mid===id).sort((a,b)=>a.day-b.day);
+  let h=`<div class="row" style="margin:6px 0 10px"><div class="av" style="background:${COLORS[p.i%COLORS.length]}">${esc(initial(p.name))}</div><div class="grow"><b style="font-size:19px">${esc(p.name)}</b><div class="muted" style="font-size:14px">${mLabel(vm)}</div></div><div class="mb"><div class="amt ${p.bal<0?'neg':'pos'}">${money(Math.abs(p.bal))}</div><div class="lb">${Math.round(p.bal)<0?'দেবে':'পাবে'}</div></div></div>
+  <div class="tot3" style="margin:0 0 6px"><div class="tt a"><b>${BNp(p.mor)}</b>সকাল</div><div class="tt b"><b>${BNp(p.noon)}</b>দুপুর</div><div class="tt c"><b>${BNp(p.night)}</b>রাত</div><div class="tt g"><b>${BNp(p.guest)}</b>গেস্ট</div></div>
+  <b>মিলের হিসাব</b>
+  <div class="kv"><span class="muted">মোট মিল × মিলরেট</span><span>${BNp(p.meals)} × ৳ ${BN2(c.rate)}</span></div>
+  <div class="kv"><span class="muted">মিলের খরচ</span><b>${money(p.cost)}</b></div>
+  <div class="kv"><span class="muted">বাজারে খরচ করেছে</span><b>${money(p.spent)}</b></div>
+  <div class="kv"><span class="muted">মিলের টাকা জমা</span><b>${money(p.dep)}</b></div>
+  <div class="kv"><span>${Math.round(p.bal)<0?'মিলের বাকি':'মিল থেকে পাবে'}</span><b class="${p.bal<0?'neg':'pos'}">${money(Math.abs(p.bal))}</b></div>
+  <div style="height:12px"></div><b>ভাড়া ও বিল</b>
+  <div class="kv"><span class="muted">প্রাপ্য</span><b>${money(c.rentEach)}</b></div>
+  <div class="kv"><span class="muted">জমা</span><b>${money(p.rentPaid)}</b></div>
+  <div class="kv"><span>বাকি</span><b class="${p.rentDue>0.5?'neg':'pos'}">${money(Math.max(0,p.rentDue))}</b></div>`;
+  if(bz.length)h+=`<div style="height:12px"></div><b>বাজারের তারিখ</b>`+bz.map(b=>`<div class="kv"><span class="muted">${dateLabel(vm,b.day)}${b.note?' · '+esc(b.note):''}</span><b>${money(b.amount)}</b></div>`).join('');
+  if(ps.length)h+=`<div style="height:12px"></div><b>জমার তারিখ</b>`+ps.map(x=>`<div class="kv"><span class="muted">${dateLabel(vm,x.day)} · ${x.type==='rent'?'ভাড়া':'মিল'}</span><b>${money(x.amount)}</b></div>`).join('');
+  h+=`<div style="height:16px"></div>`+(isMgr()?`<div class="two"><button class="btn ghost" onclick="closeSheet()">বন্ধ করুন</button><button class="btn" onclick="openPay('${id}','rent')">জমা নিন</button></div>`:`<button class="btn ghost" onclick="closeSheet()">বন্ধ করুন</button>`);
+  sheet('সদস্যের হিসাব',h);
+}
+
+/* ---------- settings actions ---------- */
+function renameMess(v){
+  if(!isMgr())return deny();
+  v=v.trim();if(!v)return;
+  updateDoc(doc(db,'messes',prof.messId),{name:v}).catch(werr);toast('নাম বদলানো হয়েছে');
+}
+function addMember(){
+  if(!isMgr())return deny();
+  const i=$('#newMember');const v=i.value.trim();if(!v){toast('নাম লিখুন');return;}
+  if(D.members.length>=MAX_MEMBERS){toast('সর্বোচ্চ ২০ জন');return;}
+  setDoc(doc(sub('members')),{name:v,role:'member',uid:null,order:Date.now()}).catch(werr);
+  logit(`${me().name} নতুন সদস্য যোগ করেছে: ${v}`);
+  i.value='';toast('সদস্য যোগ হয়েছে');
+}
+function editMember(id){
+  if(!isMgr())return deny();
+  const x=D.members.find(m=>m.id===id);if(!x)return;
+  sheet('নাম বদলান',`<label>সদস্যের নাম</label><input id="fName" value="${esc(x.name)}"><div style="height:16px"></div><button class="btn" onclick="saveMember('${id}')">সংরক্ষণ করুন</button>`);
+}
+function saveMember(id){
+  const v=$('#fName').value.trim();if(!v){toast('নাম লিখুন');return;}
+  updateDoc(doc(db,'messes',prof.messId,'members',id),{name:v}).catch(werr);
+  closeSheet();toast('সংরক্ষিত হয়েছে');
+}
+function delMember(id){
+  if(!isMgr())return deny();
+  ask(memName(id)+'-কে মুছলে তার মিলের তথ্য হিসাব থেকে বাদ যাবে, এতে মিলরেট বদলে যেতে পারে।',()=>{
+    const nm=memName(id);
+    deleteDoc(doc(db,'messes',prof.messId,'members',id)).catch(werr);
+    logit(`${me().name} সদস্য মুছেছে: ${nm}`);toast('মুছে ফেলা হয়েছে');
+  });
+}
+async function shareCode(){
+  const code=D.mess.code,text=`"${D.mess.name}" মেসে জয়েন করতে মেস হিসাব অ্যাপে কোড দিন: ${code}\n${location.href.split('#')[0]}`;
+  try{if(navigator.share){await navigator.share({text});return;}}catch(e){return;}
+  try{await navigator.clipboard.writeText(text);toast('কোড কপি হয়েছে');}catch(e){toast('কোড: '+code);}
+}
+
+Object.assign(window,{go,shiftView,goCur,openMonth,pickDay,tg,gs,bulk,openDuty,saveDuty,autoDuty,openBazar,saveBazar,delBazar,openPay,savePay,delPay,openRent,saveRent,openMember,renameMess,addMember,editMember,saveMember,delMember,shareCode,closeSheet,ask,runPend,doLogin,doLogout,createMess,joinMess,claim,loadArchive});
+render();
+</script>
+</body>
+</html>
